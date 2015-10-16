@@ -1,3 +1,7 @@
+# query syntax if files are in subdirectory called hfa: 
+# C:\apache-jena-3.0.0>.\bat\arq --query .\hfa\films1.rq --data .\hfa\prints.ttl --data .\hfa\countries.ttl --data .\hfa\runtimes.ttl > .\hfa\results1.txt
+
+
 PREFIX schema: <http://schema.org/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -5,23 +9,27 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX bf: <http://bibframe.org/vocab/#>
 PREFIX hfa: <http://hcl.harvard.edu/hfa/>
 
-# CONSTRUCT
-# { ?movie rdfs:label ?title ;
-#  schema:director ?director ;
-#  schema:duration ?duration . }
+CONSTRUCT
+	{
+	?movie rdfs:label ?title .
+	?movie schema:director ?director .
+	?movie bf:originPlace ?country .
+	?movie bf:originDate ?date .
+	?movie schema:duration ?duration .
+	}
 
- SELECT DISTINCT ?movie ?director ?duration # ?country ?date
-# Leave out country and date for now -- the query doesn't work if they are included: it runs but gives a completely blank table as a result
-
-# Make duration, country, and date OPTIONAL
+# SELECT DISTINCT ?movie ?title ?country ?date ?director ?duration
 
 WHERE
 {
 	?movie schema:workExample ?print .
-
-	?print rdfs:label ?title ;
-		schema:director ?director ;
-		schema:duration ?duration .
-#		bf:originPlace ?country ;
-#		bf:originDate ?date .
+	{
+		?print rdfs:label ?title ;
+			schema:director ?director .
+		OPTIONAL {?print bf:originPlace ?country .} 
+		OPTIONAL {?print bf:originDate ?date .}
+		OPTIONAL {?print schema:duration ?duration .}
+	}
 }
+ORDER BY ?title
+
