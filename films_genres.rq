@@ -1,0 +1,33 @@
+# purpose: produce tabular data (in csv file) on work, country, genre
+
+# C:\apache-jena-3.0.0>.\bat\arq --query .\hfa\films_genres.rq --data .\hfa\printsall.ttl --data .\hfa\countriesw.ttl --data .\hfa\runtimesw.ttl --data .\hfa\genresall.ttl > .\hfa\results3.txt
+
+# TO DO: write the results directly in a csv or tsv file. (txt file shows data in fixed width columns but in Excel it's still all in one column.)
+
+# Note: The BIBFRAME prefix needs correction in some of the data files: must not include pound sign # in the end of URL
+
+
+PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX bf: <http://bibframe.org/vocab/>
+PREFIX hfa: <http://hcl.harvard.edu/hfa/>
+
+SELECT DISTINCT ?movie ?title ?country ?date ?director ?duration ?genre
+
+WHERE
+{
+	?movie schema:workExample ?print .
+	OPTIONAL {?print bf:genre ?genre .}
+	{
+		?print rdfs:label ?title ;
+			schema:director ?director .
+		OPTIONAL {?print bf:originPlace ?country .} 
+		OPTIONAL {?print bf:originDate ?date .}
+		OPTIONAL {?print schema:duration ?duration .}
+	}
+}
+ORDER BY ?title
+
+
